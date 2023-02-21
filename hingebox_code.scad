@@ -1,78 +1,78 @@
 /* ======================================
     Mark's Enclosure Helper
     https://github.com/h2odragon/MarksEnclosureHelper
-    
-  the values in this file are reasonable defaults, or blank, for a 
+
+  the values in this file are reasonable defaults, or blank, for a
   vanilla enclosure experience. include this file in your OpenSCAD
   script and configure your box there. See included examples.
 
-  We hope you find this code useful; and beg you please to 
+  We hope you find this code useful; and beg you please to
 
                    GIVE US SOME MONEY (pretty please)
-                   
+
                    via paypal:
    https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J3AY8SM43A2DA&source=url
-  
+
    And we thank you for your support.
-   
+
    Copyright (c) 2019 Mark and Marie Lamb. Distributed under GPLv3, see LICENSE for terms.
-   
+
 ========================================== */
 
 MEH_VERSION = "20190304";
 
 
-// ============================== VARIABLES ====================  
+// ============================== VARIABLES ====================
 
-// ========== BOX  ========== 
+// ========== BOX  ==========
 
 // width (x), depth (y), height (z)
-box_def = [60, 30, 30]; 
+box_def = [60, 30, 30];
 
 // wall thickness (all around)
-wall_thick = 2;  
+wall_thick = 2;
 
 // how much height (z) is top (rest is bottom)
-top_rat = 0.15;  
+top_rat = 0.15;
 
-// height (z) of lid lip overlap chamfer (0 to disable). 
+// height (z) of lid lip overlap chamfer (0 to disable).
 //  (should be less than top_rat)
-lip_rat= 0;  
+lip_rat= 0;
 
 // box corner radius
-corner_radius = 8;  
+corner_radius = 8;
 
 // box corner $fn
-corner_fn = 16;     
+corner_fn = 16;
 
-//nut inset dia and nut inset thick (depth)  
+//nut inset dia and nut inset thick (depth)
 // used in hinge and screw tower, disable by setting hnut_t = 0
-hnut_d = 6; hnut_t = 0; 
+hnut_d = 6; hnut_t = 0;
 
 // space between hinge parts, top/bottom screw towers
-CLEAR=0.6;  
+CLEAR=0.6;
 
-// ========== HINGES ========== 
+// ========== HINGES ==========
 
 // height of hinge axis; % of total height (aka dz or box_def[2] )
-hinge_zrat = 0.70; 
+hinge_zrat = 0.70;
 
 // points along width (x)  to place hinges, leave empty for none
-hinge_points = [ ];  
-  
+hinge_points = [ ];
+
 // length of single hinge; splits top/bottom by hinge_xrat
 // anything under 10 is probably too delicate to use
-hinge_len = 16; 
+hinge_len = 16;
 
 // how much hinge_len is bottom tower. (>1 taken as a concrete unit)
 //   ( the hinge top splits the rest in half, on the outside of the lower hinge)
-hinge_xrat = 0.33; 
+hinge_xrat = 0.33;
 
 // if you want to separate the hinge towers from the box body
-hinge_standoff = 0; 
+hinge_standoff = 0;
 
 // where the hinge leg bends (z), % of hinge height
-hinge_midpoint = 0.5; 
+hinge_midpoint = 0.5;
 
 // where the hinge leg ends. <1 * lz, >1 taken absolute.
 hinge_basepoint_bottom = 0;
@@ -82,10 +82,10 @@ hinge_basepoint_top = 0;
 hinge_root_d = false; // hinge_id;
 
 // the diameter of the outer hinge cylinder
-hinge_od = 8; 
+hinge_od = 8;
 
 // hinge_id of 3.8 to 4.0 works for m3 screw and 4in ziptie
-hinge_id = 4.0;  
+hinge_id = 4.0;
 
 // size of hole to put through hinge_midpoint; 0 to disble
 hinge_mid_hole = 0;
@@ -100,7 +100,7 @@ hinge_ifn = 8;
 // if nonzero, take a cubical notch this size from the top hinge outside faces
 hinge_ztnotch = 0;
 
-// ========== CATCH CLAPS ========== 
+// ========== CATCH CLAPS ==========
 
 // where to put catch clasps
 catch_points = [];
@@ -138,7 +138,7 @@ catch_foot_thick = false;//catch_thick *2;
 // width of foot bar grip piece (* catch_wide_bottom)
 catch_foot_xrat = 1.0;
 
-// ========== MAGWARTS ========== 
+// ========== MAGWARTS ==========
 
 magwart_points = [];
 
@@ -157,21 +157,23 @@ magnet_d =6.3; magnet_h =2.3;
 // width of stress relief slot in magwart, 0 to disable
 magnet_slot_d = 0.5;
 
-// calculated later, default 
-// [round( (magnet_d*1.0)+(wall_thick*2) ), 
-//   round( (magnet_d*1.0)+(wall_thick*2) ), 
+// calculated later, default
+// [round( (magnet_d*1.0)+(wall_thick*2) ),
+//   round( (magnet_d*1.0)+(wall_thick*2) ),
 //   round( magnet_h+(wall_thick*2))]
 magwart_box = false;
 
 
-// ========== SCREW TOWERS ========== 
+// ========== SCREW TOWERS ==========
 
 // points to place screw towers
 screw_points = [];
+screw_points_far = [];
 
 // boolean, do screwtower in the top or bottom half of the box
 screwtower_top = true;
 screwtower_bottom = true;
+screwtower_far_wall = false;
 
 // diameters of screw tower
 screw_od = 8; screw_id = 3.3;
@@ -202,15 +204,18 @@ screw_slot_d = 0;
 // negative values bring them closer together
 screw_slot_xdepth = 0;//(0-CLEAR);
 
-// ========== LAYOUT ========== 
+// extra distance to add or subtract from the bottom screw tower height
+screwtower_bottom_z_adjustment = 0;
+
+// ========== LAYOUT ==========
 
 // show ghosts, top/bottom and magnets
-VIS=true;  
+VIS = version()[0] >= 2019 ? $preview : true;
 
 // extra space between top and bottom for printing
-PART_SPACE= 4; 
+PART_SPACE= 4;
 
-// ======================================= USER REDEFINES 
+// ======================================= USER REDEFINES
 
 // decorate functions are translated and rotated to the appropriate face, and given a 3vec definition of the face's size with a Z of wall_thick. see examples for ways to make use of this.
 // inside
@@ -248,21 +253,21 @@ module magwart_shape(d) { qwart(d); }
 module catch_tooth_shape( cd, ch, cfn ) { capsule_qtr( cd, ch, cfn ); }
 
 
-// ======================================== CODE  
-// ========================= utilities 
+// ======================================== CODE
+// ========================= utilities
 
 /* =========================
     cyl_grid( d, scl, sz, iv, xfn ) - create a grid of holes, center/scaled to box <d>
 
     d - [x,y,z] box definition
-    scl - factor to scale by; how much space in <d> to fill 
+    scl - factor to scale by; how much space in <d> to fill
     sz - size (diameter) of cylinder
     iv - space between cylinders
     xfn - cylinder $fn
    ========================= */
 module cyl_grid( d, scl, sz, iv, xfn=$fn ) {
     // grid of regular cylinders constrained within scaled space
-    sd=d*scl; 
+    sd=d*scl;
     xdivs=sd.x/(iv);
     ydivs=sd.y/(iv);
     xrt = (d.x*(1.0-scl)/2);
@@ -277,10 +282,10 @@ module cyl_grid( d, scl, sz, iv, xfn=$fn ) {
 }
 
 /* =========================
-    routines to to make grids on 1 or both dimensions, 
+    routines to to make grids on 1 or both dimensions,
       constrained to center/scaled portion of box <d>
 
-    slots(d, scl, hsz, t ) 
+    slots(d, scl, hsz, t )
     yslots(d, scl, hsz, t )
     grid(d, scl, hsz, t )
 
@@ -294,7 +299,7 @@ module slots (d, scl, hsz, t=wall_thick ) {
     // vent slots constrained within scaled space
     sd = d*scl;
     iv = hsz;
-    xcx = sd.x / iv; 
+    xcx = sd.x / iv;
     xrt = (d.x*(1.0-scl)/2); yrt = (d.y*(1.0-scl)/2);
     for (ix=[0:xcx]) {
         xpt = ix * iv;
@@ -337,16 +342,16 @@ module grid( d, scl, hsz, t=wall_thick ) {
     h - height of wall
     t - thickness of wall (defaults to wall_thick)
 
-    example to make 3 dividers: 
+    example to make 3 dividers:
         dividers( d, [0.25, 0.75], [0.5], d.z, wall_thick );
    ========================= */
 module dividers( d, xdiv, ydiv, h, t=wall_thick ) {
     th=t/2;
-    for (i=xdiv) { 
+    for (i=xdiv) {
         ip=((i<1)?(d.x*i):i) ;
         translate([(ip-th),0,0]) cube( [t, d.y, h] );
     }
-    for (i=ydiv) { 
+    for (i=ydiv) {
         ip=((i<1)?(d.y*i):i) ;
         translate([0,(ip-th),0]) cube( [d.x, t, h] );
     }
@@ -358,7 +363,7 @@ module dividers( d, xdiv, ydiv, h, t=wall_thick ) {
     d - [x,y,z] box definition
    ========================= */
 module diecut( d ){
-    // cut children to d sized base_box shell 
+    // cut children to d sized base_box shell
     intersection(){
         translate([0,0,0]) base_box( [d.x, d.y, d.z] );
         gang(){ children( [0:1:$children-1] ); };
@@ -374,7 +379,7 @@ module diecut( d ){
     note Z dimension is NOT scaled
    ========================= */
 module center_scale( d, scl ) {
-    // centers and scales (x/y) children in the box defined by d 
+    // centers and scales (x/y) children in the box defined by d
     translate( [(d.x*((1.0-scl)/2)), (d.y*((1.0-scl)/2)), 0] )
     resize([d.x*scl,d.y*scl, d.z])  children([0:1:$children-1]);
 }
@@ -395,20 +400,20 @@ module dovetail_rail( tlen, dtspec ) {
     tbk = (len(dtspec)>4) ? dtspec[4] : 0;
     ih=0.01;  /// all but 2d
     hb = chw_b/2;
-    points = [  [0,0], [0,chw_t], [bh, chw_t-hb], [bh,hb], ];    
-    mp = chw_t/2;  
+    points = [  [0,0], [0,chw_t], [bh, chw_t-hb], [bh,hb], ];
+    mp = chw_t/2;
     ht = tpr/2;
     ntw = chw_t - ht;
     nbw = (chw_t-chw_b) - ht;
-    points2 = [ [0,ht], [0,ntw], [bh, mp+(nbw/2)], [bh, mp-(nbw/2)], ];    
+    points2 = [ [0,ht], [0,ntw], [bh, mp+(nbw/2)], [bh, mp-(nbw/2)], ];
     hull(){
-        translate([0,0,bh]) rotate([0,90,0]) 
+        translate([0,0,bh]) rotate([0,90,0])
           linear_extrude(height=ih) {  polygon( points ); }
           if (tbk != 0) {
-            translate([tbk,0,bh]) rotate([0,90,0]) 
+            translate([tbk,0,bh]) rotate([0,90,0])
               linear_extrude(height=ih) {  polygon( points ); }
           }
-        translate([bl,0,bh]) rotate([0,90,0]) 
+        translate([bl,0,bh]) rotate([0,90,0])
           linear_extrude(height=ih) {  polygon( points2 ); }
     }
 }//dovetailrail
@@ -423,7 +428,7 @@ module dovetail_block( d, dtspec, clr=CLEAR ) {
     mpy = (d.y/2)- ((dtspec[1]/2) +(clr/2) );
     // note no taper
     ctspec = [ dtspec[0], dtspec[1]+clr, dtspec[2]+clr,  ];
-    translate([0,0,0]) rotate([0,0,0]) 
+    translate([0,0,0]) rotate([0,0,0])
     difference() {
         cube ( d );
         translate([d.x+CS,mpy,d.z+clr]) rotate([0,180,0]) dovetail_rail( d.x+CS2, ctspec );
@@ -446,7 +451,7 @@ module cylinder_half( cd, ch, cfn=$fn ) {
 module capsule( cd, ch, cfn=$fn ) {
     cdh = cd / 2;
     chh = ch /2;
-    hull(){ 
+    hull(){
         translate([cdh,cdh,cdh]) sphere( d=cd, $fn=cfn );
         translate([cdh,cdh,(ch-cdh)]) sphere( d=cd, $fn=cfn );
     }
@@ -498,7 +503,7 @@ module qwart( td, wfn=48, dst=[2,1,2.4]) {
         translate([0,0,0]) cube( [td.x, td.y, td.z] );
         translate([0,td.y/2,0])
           scale( [(td.x*dst.x), (td.y*dst.y), (td.z*dst.z)] ) { sphere(d=1, $fn=wfn); }
-    }    
+    }
 }
 
 /* =========================
@@ -512,12 +517,12 @@ module wartclip( bd, thick, ra=0 ) {
     qz=thick; wofs=qz;
     pts =[ [qz,qz, -qz], [bd.x-qz, qz, -qz ], [qz,qz, bd.z-qz], [bd.x-qz, qz, bd.z-qz ], ];
     module hpts( pi ){hull(){for (i=pi){translate(pts[i]) sphere( r=qz, $fn=sfn ); }}}
-    translate([bd.x,bd.y,0]) rotate([0,0,180]) 
-    intersection() { 
+    translate([bd.x,bd.y,0]) rotate([0,0,180])
+    intersection() {
         cube( [bd.x, bd.y, bd.z] );
         gang() {
-        hpts( [0,1,2,3] );    
-        translate([bd.x,wofs,bd.z-qz]) rotate([0,ra,90]) 
+        hpts( [0,1,2,3] );
+        translate([bd.x,wofs,bd.z-qz]) rotate([0,ra,90])
           qwart( [bd.y-wofs, bd.x, qz], wfn, [2,1,3.4] );
     }}//intersection
 }//wartclip
@@ -526,24 +531,24 @@ module wartclip( bd, thick, ra=0 ) {
 /* =========================
    ========================= */
 
-// ========================= CODE ENTRY POINT 
+// ========================= CODE ENTRY POINT
 //  you can skip this and call hingebox_half as part of your own layout if you like
 module hingedbox( bd) {
     dx = bd[0]; dy=bd[1]; dz=bd[2];
     // extra add if magwards or clasps...
-    SPC= (hinge_od*1.3)  + hinge_standoff + PART_SPACE;      
-    
+    SPC= (hinge_od*1.3)  + hinge_standoff + PART_SPACE;
+
     hingedbox_half( bd, false ); //bottom
     translate( [0,dy+SPC,0] )  hingedbox_half( bd, true); // top
 
     if (VIS) { // visualized top and bottom
-     translate( [dx,dy+SPC,dz] ) rotate([0,180,0]) %hingedbox_half( bd );    
+     translate( [dx,dy+SPC,dz] ) rotate([0,180,0]) %hingedbox_half( bd );
      translate( [dx,0, dz ] ) rotate([0,180,0])  %hingedbox_half( bd, true);
     }
 }
 
 // ======================================== No User Servicable Parts Beyond This Point
-// ========================= 
+// =========================
 // precalc / alias
 bot_rat = 1.0 - top_rat;
 wt = wall_thick; wt2 = wt * 2;
@@ -563,10 +568,10 @@ module base_box( d, top_inset=false, f=corner_fn ) {
     b=corner_radius;
     tb= top_inset ? top_inset : b;
     hull() {
-        translate( [b,b,0] ) cylinder( r=b, r2=tb, h=d.z, $fn=f );
-        translate( [b,d.y-b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
-        translate( [d.x-b,b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
-        translate( [d.x-b,d.y-b,0] ) cylinder( r=b, r2=tb,h=d.z, $fn=f  );
+        translate( [b,b,0] ) cylinder( r1=b, r2=tb, h=d.z, $fn=f );
+        translate( [b,d.y-b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
+        translate( [d.x-b,b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
+        translate( [d.x-b,d.y-b,0] ) cylinder( r1=b, r2=tb,h=d.z, $fn=f  );
     }
 }
 
@@ -581,12 +586,12 @@ module base_box( d, top_inset=false, f=corner_fn ) {
 
 
 // =========================
-// If you find this code to be terse, sorry. You should see my C. 
+// If you find this code to be terse, sorry. You should see my C.
 module hingedbox_half( bd, topflag=false ) {
 
     dx = bd.x; dy=bd.y; dz=bd.z; dxc = dx/2;
-    
-    // object height   
+
+    // object height
     lz = (topflag) ? (dz * top_rat) : (dz * bot_rat);
 
     // hinge lengths
@@ -600,23 +605,23 @@ module hingedbox_half( bd, topflag=false ) {
 
     // rim
     lip_h = dz * lip_rat;
-    
-    // box_def for cutout / decorate 
+
+    // box_def for cutout / decorate
     side_d = [ dy-wt2, lz-wt2, wt ];
     front_d = [ dx-wt2, lz-wt2, wt ];
     top_d = [dx-wt, dy-wt, wt];
-    
+
     // inserts
     ins_d=[ dx-wt2, dy-wt2, lz-wt2];
-    
+
     // screw towers
     screw_id_bottom = (screw_id_bottom !=false)? screw_id_bottom : (screw_id*0.80);
     stsz = screw_od;
-    
+
     // magwart
     // if the user hasn't set this, calculate
-    magwart_box = (magwart_box != false)? magwart_box : ([ 
-        round( (magnet_d*1.0)+(wall_thick*2) ), 
+    magwart_box = (magwart_box != false)? magwart_box : ([
+        round( (magnet_d*1.0)+(wall_thick*2) ),
         round( (magnet_d*1.0)+(wall_thick*2) ),
         round( magnet_h+(wall_thick*2) )]);
     magwart_offset = (magwart_offset != false)? magwart_offset : 0-CLEAR;
@@ -636,22 +641,31 @@ module hingedbox_half( bd, topflag=false ) {
     // top catch height
     ctth = 0-ctzp;
     // catch tooth length
-    ctl = catch_tooth_xrat* (ctbw -(catch_thick*2)); 
-    cfl = catch_foot_xrat* (ctbw -(catch_thick*2)); 
-    
+    ctl = catch_tooth_xrat* (ctbw -(catch_thick*2));
+    cfl = catch_foot_xrat* (ctbw -(catch_thick*2));
+
 
     // build thing
     difference () {
         gang(){ chopd_body(); body_build(); }
         // final cutouts
-        if (topflag) { 
+        if (topflag) {
             translate ( [wt,wt,0] ) rotate([0,0,180]) translate([0-dx,0-dy,0]) cutout_top( top_d );
             translate([dx-wt,dy,lz]) rotate([-90,0,0]) rotate([0,90,0]) cutout_top_right( side_d );
             translate([wt,0,lz]) rotate([-90,0,90]) cutout_top_left( side_d );
             translate([0,dy,lz]) rotate([90,180,180]) cutout_top_front( front_d );
             translate([dx,wt,lz]) rotate([90,180,0]) cutout_top_back( front_d );
             // screwtower lid holes
-            if (screwtower_top) {for (i=screw_points) { 
+            if (screwtower_top) {for (i=screw_points) {
+                translate( [ dx-(dx*i), (dy-wt)-(stsz/2), 0-CS] ) gang() {
+                    cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6);
+                    cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
+                }
+            }}
+            // screwtower lid holes far side
+            if (screwtower_top && screwtower_far_wall) {for (i=screw_points_far) {
+                translate( [ dx, dy, 0] )
+                rotate([0,0,180])
                 translate( [ dx-(dx*i), (dy-wt)-(stsz/2), 0-CS] ) gang() {
                     cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6);
                     cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
@@ -663,36 +677,54 @@ module hingedbox_half( bd, topflag=false ) {
             translate([dx-wt,0,0]) rotate([90,0,90]) cutout_left( side_d );
             translate([dx,dy-wt,0]) rotate([90,0,180]) cutout_front( front_d );
             translate([0,wt,0]) rotate([90,0,0]) cutout_back( front_d );
-            // screwtower
-            if (screw_punchbottom) { for (i=screw_points) { 
+            // punchbottom
+            if (screw_punchbottom) { for (i=screw_points) {
                 translate( [ (dx*i), (dy-wt)-(stsz/2), 0-CS] ) gang() {
                     cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6);
                     cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
                 }}
-            }//punchbottom
+            }//punchbottom far side
+            if (screw_punchbottom && screwtower_far_wall) { for (i=screw_points_far) {
+                translate( [ dx, dy, 0] )
+                rotate([0,0,180])
+                translate( [ (dx*i), (dy-wt)-(stsz/2), 0-CS] ) gang() {
+                    cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6);
+                    cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
+                }}
+            }//punchbottom && far_wall
         }//topflag
     }// top level difference
-    
+
     // sub modules
     module body_build() { // build interior after first cutout
         if (topflag) {
             // decorate callbacks
-            translate([wt,wt,wt]) decorate_top( top_d ); 
+            translate([wt,wt,wt]) decorate_top( top_d );
             // top sides
             translate([0,0,lz]) rotate([-90,0,90]) decorate_top_left( side_d );
             translate([dx,dy,lz]) rotate([90,180,90]) decorate_top_right( side_d );
             translate([0,dy,lz]) rotate([90,180,180]) decorate_top_front( front_d );
             translate([dx,0,lz]) rotate([90,180,0]) decorate_top_back( front_d );
             // insert
-            translate([wt,wt,wt]) rotate([0,0,0]) insert_top( ins_d ); 
+            translate([wt,wt,wt]) rotate([0,0,0]) insert_top( ins_d );
             // catch clasps
             for (i=catch_points) {
-                translate( [(dx*i)-(ctw/2), dy, catch_thick*2] ) rotate([-90,0,0]) 
+                translate( [(dx*i)-(ctw/2), dy, catch_thick*2] ) rotate([-90,0,0])
                   catch_clasp( ctw, ctbw, ctth, catch_thick );
             }
             // screwtower top inside lid
-            if (screwtower_top) {for (i=screw_points) { 
-                translate( [ dx-(dx*i), (dy-wt)-(stsz/2), 0] ) 
+            if (screwtower_top) {for (i=screw_points) {
+                translate( [ dx-(dx*i), (dy-wt)-(stsz/2), 0] )
+                difference() {
+                    screw_tower( lz, false ); // not doing taper doesnt matter :)
+                    cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
+                }
+            }}
+            // screwtower top inside lid far side
+            if (screwtower_top &&  screwtower_far_wall) {for (i=screw_points_far) {
+                translate( [ dx, dy, 0] )
+                rotate([0,0,180])
+                translate( [ dx-(dx*i), (dy-wt)-(stsz/2), 0] )
                 difference() {
                     screw_tower( lz, false ); // not doing taper doesnt matter :)
                     cylinder( d=screw_id, h=(lz-CLEAR)+CS2, $fn=screw_ifn);
@@ -700,7 +732,7 @@ module hingedbox_half( bd, topflag=false ) {
             }}
             // magwarts
             for (i=magwart_points) {
-                translate( [ dx- ((i<1)?(dx*i):i) , dy, mgw_z] ) 
+                translate( [ dx- ((i<1)?(dx*i):i) , dy, mgw_z] )
                 magwart( magwart_box, 0-magwart_slotra, magwart_offset ) ;
             }
         } else { // bottom
@@ -715,28 +747,34 @@ module hingedbox_half( bd, topflag=false ) {
             rotate([0,0,180]) translate( [0-dx,0-dy,0] ) translate([wt,wt,wt]) insert_bottom( ins_d );
             // catch clasps' teeth
             for (i=catch_points) {
-                translate( [(dx*i)-(ctl/2), dy, ctzp - ((catch_thick*2)-catch_offset) ] ) 
-                rotate([0,90,0]) //translate([0-catch_thick ,0,0]) 
+                translate( [(dx*i)-(ctl/2), dy, ctzp - ((catch_thick*2)-catch_offset) ] )
+                rotate([0,90,0]) //translate([0-catch_thick ,0,0])
                   catch_tooth_shape( catch_thick*2, ctl, catch_fn );
             }
             // screwtowers bottom inside body
             if (screwtower_bottom) {for (i=screw_points) {
-                translate( [ (dx*i), (dy-wt)-(stsz/2), 0] ) screw_tower( lz-(lip_h+CLEAR) );
+                translate( [ (dx*i), (dy-wt)-(stsz/2), 0] ) screw_tower( lz-(lip_h+CLEAR)+screwtower_bottom_z_adjustment );
+            }}
+            // screwtowers bottom inside body far side
+            if (screwtower_bottom && screwtower_far_wall) {for (i=screw_points_far) {
+                translate( [ dx, dy, 0] )
+                rotate([0,0,180])
+                translate( [ (dx*i), (dy-wt)-(stsz/2), 0] ) screw_tower( lz-(lip_h+CLEAR)+screwtower_bottom_z_adjustment );
             }}
             // magwarts
             for (i=magwart_points) {
-                translate( [ ((i<1)?(dx*i):i) , dy, mgw_z] ) 
+                translate( [ ((i<1)?(dx*i):i) , dy, mgw_z] )
                 magwart( magwart_box, magwart_slotra, magwart_offset ) ;
             }
         }
     }// body_build
-   
+
     module chopd_body() {
         difference () {
             base_body();
             // inside hollow
             translate( [wt,wt,wt] ) base_box( [dx - wt2, dy - wt2, lz+dz] );
-            if (topflag) { 
+            if (topflag) {
                 // clean lid inside (trim hinge towers)
                 translate( [0,0,lz+lip_h] ) base_box( [dx, dy, lz-(lip_h-wt)] );
                 // cutout rim
@@ -752,7 +790,7 @@ module hingedbox_half( bd, topflag=false ) {
         // hinges
         for (i=hinge_points) {
             hcp = (dx * i);
-            if (topflag) { 
+            if (topflag) {
                 hxofs = (bhl/2) + (CLEAR);
                 translate( [hcp + hxofs +thl, hy , hlz] ) rotate([0,-90,0]) hinge( thl, 1 ) ;
                 translate( [hcp - hxofs , hy , hlz] ) rotate([0,-90,0]) hinge( thl, -1 ) ;
@@ -763,7 +801,7 @@ module hingedbox_half( bd, topflag=false ) {
         // rim
         if (!topflag) { translate([0,0,lz-lip_h]) rim( [dx, dy, lip_h] ); }
     }//base_body
-    
+
     module hinge(cl,  ntf=0) {
         // ntf is which face to take nut inset out of
         ofn = hinge_ofn; ifn = hinge_ifn;
@@ -788,7 +826,7 @@ module hingedbox_half( bd, topflag=false ) {
             // hinge pin hole
             translate( [0,0,0-CS]) cylinder( d=hinge_id, h=cl+CS2, $fn=ifn);
             // nut holes
-            if (topflag) { 
+            if (topflag) {
                 if (ntf >0) {translate( [0,0,0-CS] ) cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6 ); }
                 if (ntf <0) {translate( [0,0,cl-hnut_t] ) cylinder( d=hnut_d, h=hnut_t+CS2, $fn=6 ); }
             }
@@ -814,7 +852,7 @@ module hingedbox_half( bd, topflag=false ) {
                 cylinder( d=screw_od, h=tz, $fn=screw_ofn );
                 translate( [0-sh,0+sb,0] ) cube( [screw_od*screw_bspread,wt,tz] );
             }
-            translate([0,0,tz-hdp] ) 
+            translate([0,0,tz-hdp] )
               cylinder( d1=hd1, d2=screw_id, h=hdp+CS, $fn=screw_ifn );
             // magnet slots
             translate([0,0,tz - (wt + screw_slot_xdepth + screw_slot_h )] )
@@ -846,20 +884,20 @@ module hingedbox_half( bd, topflag=false ) {
             spbar( points[1], points[3] );
             // fill
             if (catch_inner_thick) {
-                translate([ccr,ccr,0]) 
-                  linear_extrude( height=catch_inner_thick ){ 
+                translate([ccr,ccr,0])
+                  linear_extrude( height=catch_inner_thick ){
                     polygon(points);
                 }
             }
             // nose
             if (catch_foot_thick) {
                 cft=catch_foot_thick*2;
-                translate( [(cw/2)-(cfl/2),ym,cft/2] ) rotate([0,90,0]) 
+                translate( [(cw/2)-(cfl/2),ym,cft/2] ) rotate([0,90,0])
                    capsule_qtr( cft, cfl, cfn);
             }
         }//clbody
         module spbar( p1, p2 ) {
-            hull() { 
+            hull() {
                 translate( [ p1[0], p1[1], zp] )  sphalf( ccr );
                 translate( [ p2[0], p2[1], zp] )  sphalf( ccr );
             }
@@ -881,16 +919,16 @@ module hingedbox_half( bd, topflag=false ) {
 
     module magwart(td, ra=0, bttm=wall_thick ) {
         hfn = 32; // hole fn
-        rotate( [-90,90,0] ) translate([0-td.x,0-td.y/2,0]) 
+        rotate( [-90,90,0] ) translate([0-td.x,0-td.y/2,0])
         gang(){ // color("white") %sphere(1); // where's that corner at now?
         difference(){
             magwart_shape( td );
-            translate([bttm,0,wt]) 
+            translate([bttm,0,wt])
               bs_shape( [td.x, td.y, td.z], magnet_d, magnet_h, magnet_slot_d, ra, hfn ) ;
         }//diff
-        if (VIS){     
-            translate( [(magnet_d/2),(td.y/2),wt] ) 
-            color("red") %cylinder( d=magnet_d, h=magnet_h ); 
+        if (VIS){
+            translate( [(magnet_d/2),(td.y/2),wt] )
+            color("red") %cylinder( d=magnet_d, h=magnet_h );
         }} // gang
     }//magwart
 
